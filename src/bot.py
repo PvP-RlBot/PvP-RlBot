@@ -12,6 +12,4 @@ class Bot(BaseAgent):
         pass
 
     def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
-        b = BotOutput()
-        b.throttle = 0
-        return b
+        return BotOutput()
