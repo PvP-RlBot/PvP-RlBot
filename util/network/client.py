@@ -1,28 +1,22 @@
 import socketio
 
-sio = socketio.Client(reconnection=False)
+sio = socketio.Client()
 
 
-class Client:
+class ClientUtils:
     __is_connected = False
 
     @staticmethod
-    def start(url='http://localhost:5000'):
-        sio.connect(url)
-
-    @staticmethod
-    def stop():
-        if Client.__is_connected:
-            return
-        sio.disconnect()
+    def start(url):
+        sio.connect(url, wait=False)
 
     @staticmethod
     def got_connected():
-        Client.__is_connected = True
+        ClientUtils.__is_connected = True
 
     @staticmethod
     def got_disconnected():
-        Client.__is_connected = False
+        ClientUtils.__is_connected = False
 
     @staticmethod
     def send_data(str_data):
@@ -30,16 +24,28 @@ class Client:
 
     @staticmethod
     def is_connected():
-        return Client.__is_connected
+        return ClientUtils.__is_connected
+
+
+class Client:
+    @staticmethod
+    def start(url='http://localhost:5000'):
+        ClientUtils.start(url)
+
+    @staticmethod
+    def send_data(str_data):
+        ClientUtils.send_data(str_data)
+
+    @staticmethod
+    def is_connected():
+        return ClientUtils.is_connected()
 
 
 @sio.event
 def connect():
-    print("con")
-    Client.got_connected()
+    ClientUtils.got_connected()
 
 
 @sio.event
 def disconnect():
-    print("dis")
-    Client.got_disconnected()
+    ClientUtils.got_disconnected()
