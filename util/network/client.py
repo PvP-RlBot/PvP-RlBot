@@ -13,7 +13,7 @@ class ClientUtils:
 
     @staticmethod
     def start(url):
-        sio.connect(url, wait=False)
+        sio.connect(url)
 
     @staticmethod
     def got_connected():
