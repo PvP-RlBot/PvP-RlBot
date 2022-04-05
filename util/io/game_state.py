@@ -14,7 +14,9 @@ class GameState:
         for car in packet.game_cars:
             team = Team.idToTeam(car.team)
             self.car_list.append(CarData(car, team))
-        self.previousGameState = previous_game_state
+        self.previous_game_state = previous_game_state
+        if self.previous_game_state is not None:
+            self.previous_game_state.previous_game_state = None
         self.human_car_list = self.__generateHumanCarList(self.car_list)
         self.car = self.car_list[index]
         self.team = self.car.team
