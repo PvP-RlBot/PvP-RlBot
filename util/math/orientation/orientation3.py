@@ -11,4 +11,5 @@ class Orientation3:
     def __init__(self, front: Vector3, top: Vector3):
         self.front = front
         self.top = top
-
+        self.right = front.cross(top)
+        
