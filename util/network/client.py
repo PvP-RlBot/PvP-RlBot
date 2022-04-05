@@ -4,6 +4,11 @@ sio = socketio.Client()
 
 
 class ClientUtils:
+    """
+    This class is for implementing a basic client connection.
+    If you're just interested in establishing a connection to a server using a certain url,
+    you should use the Client class instead.
+    """
     __is_connected = False
 
     @staticmethod
@@ -28,6 +33,9 @@ class ClientUtils:
 
 
 class Client:
+    """
+    Use this Client class to easily connect to a server on a specific url.
+    """
     @staticmethod
     def start(url='http://localhost:5000'):
         ClientUtils.start(url)
