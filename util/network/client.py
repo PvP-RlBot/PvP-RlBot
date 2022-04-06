@@ -48,6 +48,10 @@ class Client:
     def is_connected():
         return ClientUtils.is_connected()
 
+    @staticmethod
+    def get_sid():
+        return sio.get_sid()
+
 
 @sio.event
 def connect():

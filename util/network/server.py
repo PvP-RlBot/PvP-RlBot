@@ -40,6 +40,10 @@ class ServerUtils:
     def amount_of_connections():
         return len(ServerUtils.__clients)
 
+    @staticmethod
+    def get_sids():
+        return ServerUtils.__clients
+
 
 class Server:
     """
@@ -56,6 +60,10 @@ class Server:
     @staticmethod
     def amount_of_connections():
         return ServerUtils.amount_of_connections()
+
+    @staticmethod
+    def get_sids():
+        return ServerUtils.get_sids()
 
 
 @sio.event

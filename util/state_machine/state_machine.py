@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from util.io.game_state import GameState
+
 
 class State(ABC):
     def start(self, param):
@@ -22,7 +24,7 @@ class StateMachine(State):
         self.state = None
         self.nextState = init_state
 
-    def exec(self, param):
+    def exec(self, param: GameState):
         if self.nextState is not self.state:
             self.nextState.start(param)
         self.state = self.nextState

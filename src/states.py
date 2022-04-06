@@ -1,10 +1,10 @@
 from threading import Thread
 
+from src.physics.game_sync import InitGameSyncWithOtherPlayer
 from util.io.game_state import GameState
 from util.network.client import Client
 from util.network.server import Server
 from util.state_machine.state_machine import State, StateMachine
-from src.physics.game_states.game_states import InitGameLogic
 
 
 def connected():
@@ -35,7 +35,7 @@ class ConnectToOtherPlayer(State):
 
 class ConnectionEstablished(State):
     def __init__(self):
-        self.machine = StateMachine(InitGameLogic())
+        self.machine = StateMachine(InitGameSyncWithOtherPlayer())
 
     def start(self, param):
         print('Connected')

@@ -1,5 +1,9 @@
 from typing import List
 
+import jsonpickle
+
+import rlbot.utils.game_state_util as framework_utils
+
 from util.io.dynamic_data.ball import BallData
 from util.io.dynamic_data.car import CarData
 from util.io.misc_info.team import Team
@@ -22,6 +26,12 @@ class GameState:
         self.team = self.car.team
         self.ball = BallData(packet.game_ball.physics)
 
+    def toFrameworkGameState(self):
+        ball_state = framework_utils.BallState(
+            framework_utils.Physics(location=self.ball.position.to_game_state_vector3(),
+                                    velocity=self.ball.velocity.to_game_state_vector3()))
+        return framework_utils.GameState(ball=ball_state)
+
     @staticmethod
     def __generateHumanCarList(car_list: List[CarData]):
         human_car_list = []
@@ -29,3 +39,11 @@ class GameState:
             if not car.is_bot:
                 human_car_list.append(car)
         return human_car_list
+
+    @classmethod
+    def toJSON(cls, game_state):
+        return jsonpickle.encode(game_state)
+
+    @classmethod
+    def fromJSON(cls, received_sync_data):
+        return jsonpickle.decode(received_sync_data)
