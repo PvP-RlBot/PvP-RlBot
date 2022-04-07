@@ -1,8 +1,8 @@
 from threading import Thread
 
-from util.network.connection.synchronizer.synchronizer_states import SendReceiveAlternator
 from util.io.game_state import GameState
 from util.network.client import Client
+from util.network.connection.synchronization.alternator import SenderReceiverAlternator
 from util.network.server import Server
 from util.state_machine.state_machine import State
 
@@ -35,7 +35,7 @@ class ConnectToOtherPlayer(State):
 
 class ConnectionEstablished(State):
     def __init__(self):
-        self.send_receive_alternator = SendReceiveAlternator()
+        self.send_receive_alternator = SenderReceiverAlternator()
 
     def start(self, param):
         print('Connected')

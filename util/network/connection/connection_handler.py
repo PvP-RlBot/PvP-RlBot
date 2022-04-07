@@ -1,5 +1,5 @@
 from util.network.connection.connection_handler_states import InitConnection
-from util.network.connection.synchronizer.synchronizer_states import SynchronizationData
+from util.network.connection.synchronization.alternator_states import SynchronizationData
 from util.network.server import Server
 from util.state_machine.state_machine import StateMachine
 
