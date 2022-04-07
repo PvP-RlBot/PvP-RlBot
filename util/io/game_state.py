@@ -21,12 +21,6 @@ class GameState:
         self.team = self.car.team
         self.ball = BallData(packet.game_ball.physics)
 
-    def toFrameworkGameState(self):
-        ball_state = framework_utils.BallState(
-            framework_utils.Physics(location=self.ball.position.to_game_state_vector3(),
-                                    velocity=self.ball.velocity.to_game_state_vector3()))
-        return framework_utils.GameState(ball=ball_state)
-
     @staticmethod
     def __generateHumanCarList(car_list: List[CarData]):
         human_car_list = []
@@ -35,6 +29,15 @@ class GameState:
                 human_car_list.append(car)
         return human_car_list
 
+    def update_with_sync_data(self, received_sync_data):
+        pass
+
+    def toFrameworkGameState(self):
+        ball_state = framework_utils.BallState(
+            framework_utils.Physics(location=self.ball.position.to_game_state_vector3(),
+                                    velocity=self.ball.velocity.to_game_state_vector3()))
+        return framework_utils.GameState(ball=ball_state)
+
     @classmethod
     def toJSON(cls, game_state):
         return jsonpickle.encode(game_state)
@@ -42,6 +45,3 @@ class GameState:
     @classmethod
     def fromJSON(cls, received_sync_data):
         return jsonpickle.decode(received_sync_data)
-
-    def update_with_sync_data(self, received_sync_data):
-        pass
