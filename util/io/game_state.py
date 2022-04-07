@@ -6,21 +6,16 @@ import rlbot.utils.game_state_util as framework_utils
 
 from util.io.dynamic_data.ball import BallData
 from util.io.dynamic_data.car import CarData
-from util.io.misc_info.team import Team
 
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 
 
 class GameState:
-    def __init__(self, packet: GameTickPacket, previous_game_state, index: int):
+    def __init__(self, packet: GameTickPacket, index: int):
         self.index = index
         self.car_list = []
         for car in packet.game_cars:
-            team = Team.idToTeam(car.team)
-            self.car_list.append(CarData(car, team))
-        self.previous_game_state = previous_game_state
-        if self.previous_game_state is not None:
-            self.previous_game_state.previous_game_state = None
+            self.car_list.append(CarData(car))
         self.human_car_list = self.__generateHumanCarList(self.car_list)
         self.car = self.car_list[index]
         self.team = self.car.team
@@ -47,3 +42,6 @@ class GameState:
     @classmethod
     def fromJSON(cls, received_sync_data):
         return jsonpickle.decode(received_sync_data)
+
+    def update_with_sync_data(self, received_sync_data):
+        pass
