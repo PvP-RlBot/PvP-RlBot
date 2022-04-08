@@ -2,7 +2,7 @@ import time
 
 from util.io.game_state import GameState
 from util.network.client import Client
-from util.network.connection.synchronization.communication_data import CommunicationData
+from util.network.connection.communication_data import CommunicationData
 from util.network.server import Server
 from util.state_machine.state_machine import State
 

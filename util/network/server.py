@@ -1,10 +1,9 @@
+from socket import socket
 from typing import Callable
 
 import eventlet
 import socketio
-
-sio = socketio.Server()
-app = socketio.WSGIApp(sio)
+from eventlet import wsgi
 
 
 class Server:
@@ -13,22 +12,30 @@ class Server:
     """
     def __init__(self):
         self.sio = socketio.Server()
-        self.app = socketio.WSGIApp(sio)
+        self.app = socketio.WSGIApp(self.sio)
+        self.socket: socket = None
         self.__clients = []
 
-        @sio.event
+        @self.sio.event
         def connect(sid, environ, auth):
             self.__clients.append(sid)
 
-        @sio.event
+        @self.sio.event
         def disconnect(sid):
             self.__clients.remove(sid)
 
     def start(self, host='', port=5000):
-        eventlet.wsgi.server(eventlet.listen((host, port)), app)
+        self.socket = eventlet.listen((host, port))
+        wsgi.server(self.socket, self.app)
+
+    def stop(self):
+        try:
+            self.socket.close()
+        except Exception:
+            pass
 
     def set_reception_callback(self, callback: Callable[[str], None]):
-        @sio.on('*')
+        @self.sio.on('*')
         def catch_all(event, data):
             callback(data)
 

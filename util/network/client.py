@@ -12,7 +12,10 @@ class Client:
         self.sio.connect(url)
 
     def stop(self):
-        self.sio.disconnect()
+        try:
+            self.sio.disconnect()
+        except Exception:
+            pass
 
     def send_data(self, str_data):
         self.sio.emit('*', data=str_data)
