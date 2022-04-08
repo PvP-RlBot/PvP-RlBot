@@ -47,7 +47,7 @@ class ConnectionEstablished(State):
         self.send_receive_alternator = SenderReceiverAlternator(client, server, synchronization_data)
 
     def start(self, param):
-        print('Connected')
+        print('Connected to other player!')
 
     def stop(self, param):
         print('Disconnected from other player!')
@@ -67,7 +67,7 @@ class TryReconnection(State):
         self.server = server
 
     def start(self, param):
-        print('Trying to reconnect...')
+        print('Trying to reconnect to other player...')
 
     def exec(self, param):
         pass
