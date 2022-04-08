@@ -22,7 +22,7 @@ class Server:
 
         @sio.event
         def disconnect(sid):
-            self.__clients.append(sid)
+            self.__clients.remove(sid)
 
     def start(self, host='', port=5000):
         eventlet.wsgi.server(eventlet.listen((host, port)), app)
