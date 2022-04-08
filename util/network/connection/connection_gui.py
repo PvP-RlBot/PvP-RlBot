@@ -18,7 +18,7 @@ class ConnectionGui:
         self.__client_url_entry.grid(row=0, column=1)
         self.__server_host_entry.grid(row=1, column=1)
         self.__server_port_entry.grid(row=1, column=3)
-        tk.Button(self.tk, text="Connect", command=self.try_parsing_entries).grid(row=4, column=0)
+        tk.Button(self.tk, text="Connect", command=self.__try_parsing_entries).grid(row=4, column=0)
 
     def update(self):
         self.tk.update()
@@ -26,7 +26,7 @@ class ConnectionGui:
     def quit(self):
         self.tk.destroy()
 
-    def try_parsing_entries(self):
+    def __try_parsing_entries(self):
         self.client_url = self.__client_url_entry.get()
         self.server_host = self.__server_host_entry.get()
         self.server_port = self.__server_port_entry.get()
