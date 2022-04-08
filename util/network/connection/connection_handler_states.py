@@ -4,7 +4,7 @@ import jsonpickle
 
 from util.io.game_state import GameState
 from util.network.client import Client
-from util.network.connection.connection_gui import ConnectionGui
+from util.network.connection.connection_gui import ConnectionGUI
 from util.network.connection.synchronization.alternator import SenderReceiverAlternator
 from util.network.connection.synchronization.alternator_states import CommunicationData
 from util.network.connection.communication_data import CommunicationDataBuilder
@@ -45,7 +45,7 @@ class TryConnectingWithConfigFile(State):
 
 class AskNetworkInfoGUI(State):
     def __init__(self):
-        self.connection_gui = ConnectionGui()
+        self.connection_gui = ConnectionGUI()
 
     def exec(self, param):
         self.connection_gui.update()

@@ -7,7 +7,6 @@ from util.math.vector.vector3 import Vector3
 
 class CarData:
     def __init__(self, player_info: PlayerInfo):
-        self.player_info = player_info
         self.is_bot = player_info.is_bot
         self.position = Vector3(player_info.physics.location)
         self.velocity = Vector3(player_info.physics.velocity)

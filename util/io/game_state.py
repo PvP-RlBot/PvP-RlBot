@@ -14,8 +14,8 @@ class GameState:
     def __init__(self, packet: GameTickPacket, index: int):
         self.index = index
         self.car_list = []
-        for car in packet.game_cars:
-            self.car_list.append(CarData(car))
+        for i in range(packet.num_cars):
+            self.car_list.append(CarData(packet.game_cars[i]))
         self.human_car_list = self.__generateHumanCarList(self.car_list)
         self.car = self.car_list[index]
         self.team = self.car.team

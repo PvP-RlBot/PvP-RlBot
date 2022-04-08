@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-class ConnectionGui:
+class ConnectionGUI:
     def __init__(self):
         self.tk = tk.Tk()
         self.client_url = None
