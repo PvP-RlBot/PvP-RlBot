@@ -58,6 +58,7 @@ class ConnectionEstablished(State):
     def __init__(self, client: Client, server: Server, communication_data: CommunicationData):
         self.client = client
         self.server = server
+        self.communication_data = communication_data
         self.send_receive_alternator = SenderReceiverAlternator(client, server, communication_data)
 
     def start(self, param):
@@ -71,14 +72,15 @@ class ConnectionEstablished(State):
 
     def next(self, param):
         if not connected(self.client, self.server):
-            return TryReconnection(self.client, self.server)
+            return TryReconnection(self.client, self.server, self.communication_data)
         return self
 
 
 class TryReconnection(State):
-    def __init__(self, client: Client, server: Server):
+    def __init__(self, client: Client, server: Server, communication_data: CommunicationData):
         self.client = client
         self.server = server
+        self.communication_data = communication_data
 
     def start(self, param):
         print('Trying to reconnect to other player...')
@@ -88,5 +90,5 @@ class TryReconnection(State):
 
     def next(self, param):
         if connected(self.client, self.server):
-            return ConnectionEstablished(self.client, self.server)
+            return ConnectionEstablished(self.client, self.server, self.communication_data)
         return self

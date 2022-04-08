@@ -11,6 +11,9 @@ class Client:
     def start(self, url='http://localhost:5000'):
         self.sio.connect(url)
 
+    def stop(self):
+        self.sio.disconnect()
+
     def send_data(self, str_data):
         self.sio.emit('*', data=str_data)
 
