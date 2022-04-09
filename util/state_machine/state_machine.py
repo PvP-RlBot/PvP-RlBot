@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from util.coding_rules.override import Override
 from util.io.game_state import GameState
 
 
@@ -10,13 +11,11 @@ class State(ABC):
     def stop(self, param):
         pass
 
-    @abstractmethod
     def exec(self, param):
         pass
 
-    @abstractmethod
     def next(self, param):
-        pass
+        return self
 
 
 class StateMachine(State):
@@ -24,6 +23,7 @@ class StateMachine(State):
         self.state = None
         self.nextState = init_state
 
+    @Override(State)
     def exec(self, param: GameState):
         if self.nextState is not self.state:
             self.nextState.start(param)
@@ -34,6 +34,3 @@ class StateMachine(State):
             self.state.stop(param)
 
         return output
-
-    def next(self, param):
-        return self

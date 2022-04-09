@@ -2,10 +2,11 @@ from threading import Thread
 
 import jsonpickle
 
+from util.coding_rules.override import Override
 from util.io.game_state import GameState
 from util.network.client import Client
 from util.network.connection.connection_gui import ConnectionGUI
-from util.network.connection.synchronization.alternator import SenderReceiverAlternator
+from util.network.connection.synchronization.alternator import AlternatingCommunicationStrategy
 from util.network.connection.synchronization.alternator_states import CommunicationData
 from util.network.connection.communication_data import CommunicationDataBuilder
 from util.network.server import Server
@@ -16,29 +17,15 @@ def connected(client: Client, server: Server):
     return client.is_connected() and server.amount_of_connections() > 0
 
 
-class InitConnection(State):
-    def exec(self, param):
-        pass
-
-    def next(self, param):
-        return TryConnectingWithConfigFile()
-
-
-def is_config_file_invalid(communication_data_from_cfg):
-    return communication_data_from_cfg is None
-
-
 class TryConnectingWithConfigFile(State):
     def __init__(self):
-        f = open("src/network_connection.cfg", "r")
-        self.communication_data_from_cfg = CommunicationData.asCommunicationData(jsonpickle.decode(f.read()))
-        f.close()
+        file = open("src/network_connection.cfg", "r")
+        self.communication_data_from_cfg = CommunicationData.validateCommunicationData(jsonpickle.decode(file.read()))
+        file.close()
 
-    def exec(self, param):
-        pass
-
+    @Override(State)
     def next(self, param):
-        if is_config_file_invalid(self.communication_data_from_cfg):
+        if CommunicationData.is_config_file_invalid(self.communication_data_from_cfg):
             return AskNetworkInfoGUI()
         return ConnectToOtherPlayer(self.communication_data_from_cfg)
 
@@ -47,12 +34,15 @@ class AskNetworkInfoGUI(State):
     def __init__(self):
         self.connection_gui = ConnectionGUI()
 
+    @Override(State)
     def exec(self, param):
         self.connection_gui.update()
 
+    @Override(State)
     def stop(self, param):
         self.connection_gui.quit()
 
+    @Override(State)
     def next(self, param):
         if self.connection_gui.has_requested_connection:
             communication_data = CommunicationDataBuilder()\
@@ -60,9 +50,9 @@ class AskNetworkInfoGUI(State):
                 .withHost(self.connection_gui.server_host)\
                 .withPort(self.connection_gui.server_port)\
                 .build()
-            f = open("src/network_connection.cfg", "w")
-            f.write(jsonpickle.encode(communication_data, indent=4))
-            f.close()
+            file = open("src/network_connection.cfg", "w")
+            file.write(jsonpickle.encode(communication_data, indent=4))
+            file.close()
             return ConnectToOtherPlayer(communication_data)
         return self
 
@@ -79,6 +69,7 @@ class ConnectToOtherPlayer(State):
         self.client_connection_thread = None
         self.server_connection_thread = None
 
+    @Override(State)
     def start(self, param):
         self.server.set_reception_callback(self.communication_data.receiveSyncData)
         server_args = (self.communication_data.server_host, self.communication_data.server_port)
@@ -88,9 +79,7 @@ class ConnectToOtherPlayer(State):
         self.server_connection_thread.start()
         self.client_connection_thread.start()
 
-    def exec(self, param):
-        pass
-
+    @Override(State)
     def next(self, param):
         if connected(self.client, self.server):
             return ConnectionEstablished(self.client, self.server, self.communication_data)
@@ -106,20 +95,24 @@ class ConnectionEstablished(State):
         self.client = client
         self.server = server
         self.communication_data = communication_data
-        self.send_receive_alternator = SenderReceiverAlternator(client, server, communication_data)
+        self.communication_strategy = AlternatingCommunicationStrategy(client, server, communication_data)
 
+    @Override(State)
     def start(self, param):
         print('Connected to other player!')
         print('client url: ', self.communication_data.client_url)
         print('server host:', self.communication_data.server_host)
         print('server port:', self.communication_data.server_port)
 
+    @Override(State)
     def stop(self, param):
         print('Disconnected from other player!')
 
+    @Override(State)
     def exec(self, param: GameState):
-        return self.send_receive_alternator.exec(param)
+        return self.communication_strategy.communicate(param)
 
+    @Override(State)
     def next(self, param):
         if not connected(self.client, self.server):
             return TryReconnection(self.client, self.server, self.communication_data)
@@ -132,12 +125,13 @@ class TryReconnection(State):
         self.server = server
         self.communication_data = communication_data
 
+    @Override(State)
     def start(self, param):
         print('Trying to reconnect to other player...')
 
-    def exec(self, param):
-        pass
+    # reconnection is done automatically in the client thread
 
+    @Override(State)
     def next(self, param):
         if connected(self.client, self.server):
             return ConnectionEstablished(self.client, self.server, self.communication_data)

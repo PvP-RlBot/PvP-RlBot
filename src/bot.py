@@ -19,6 +19,6 @@ class Bot(BaseAgent):
 
     def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
         game_state = GameState(packet, self.index)
-        self.game_synchronizer.exec(game_state)
+        self.game_synchronizer.synchronize(game_state)
         self.set_game_state(game_state.toFrameworkGameState())
         return BotOutput()

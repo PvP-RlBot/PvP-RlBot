@@ -13,7 +13,7 @@ class CommunicationData:
 
     # noinspection PyStatementEffect
     @staticmethod
-    def asCommunicationData(communication_data_cfg):
+    def validateCommunicationData(communication_data_cfg):
         try:
             communication_data_cfg.received_sync_data
             communication_data_cfg.client_url
@@ -22,6 +22,10 @@ class CommunicationData:
             return communication_data_cfg
         except Exception:
             return None
+
+    @staticmethod
+    def is_config_file_invalid(communication_data_from_cfg):
+        return communication_data_from_cfg is None
 
 
 class CommunicationDataBuilder:
