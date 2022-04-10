@@ -32,7 +32,7 @@ class GameState:
         return human_car_list
 
     def update_with_sync_data(self, received_sync_data):
-        self.ball.velocity = (received_sync_data.ball.velocity + Vector3(5, 0, 0))
+        pass
 
     def toFrameworkGameState(self):
         ball_state = framework_utils.BallState(
