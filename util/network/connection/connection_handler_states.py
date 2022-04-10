@@ -4,6 +4,7 @@ import jsonpickle
 from overrides import overrides
 
 from util.io.game_state import GameState
+from util.logging.logging import Logger, ConsoleLogger
 from util.network.client import Client
 from util.network.connection.connection_gui import ConnectionGUI
 from util.network.connection.synchronization.alternator import AlternatingCommunicationStrategy
@@ -82,7 +83,7 @@ class ConnectToOtherPlayer(State):
     @overrides
     def next(self, param):
         if connected(self.client, self.server):
-            return ConnectionEstablished(self.client, self.server, self.communication_data)
+            return ConnectionEstablished(self.client, self.server, self.communication_data, ConsoleLogger())
         if cannotConnectToOtherPlayer(self.server_connection_thread, self.client_connection_thread):
             self.server.stop()
             self.client.stop()
@@ -91,22 +92,23 @@ class ConnectToOtherPlayer(State):
 
 
 class ConnectionEstablished(State):
-    def __init__(self, client: Client, server: Server, communication_data: CommunicationData):
+    def __init__(self, client: Client, server: Server, communication_data: CommunicationData, logger: Logger):
         self.client = client
         self.server = server
         self.communication_data = communication_data
         self.communication_strategy = AlternatingCommunicationStrategy(client, server, communication_data)
+        self.logger = logger
 
     @overrides
     def start(self, param):
-        print('Connected to other player!')
-        print('client url: ', self.communication_data.client_url)
-        print('server host:', self.communication_data.server_host)
-        print('server port:', self.communication_data.server_port)
+        self.logger.log('Connected to other player!')
+        self.logger.log('client url: ', self.communication_data.client_url)
+        self.logger.log('server host:', self.communication_data.server_host)
+        self.logger.log('server port:', self.communication_data.server_port)
 
     @overrides
     def stop(self, param):
-        print('Disconnected from other player!')
+        self.logger.log('Disconnected from other player!')
 
     @overrides
     def exec(self, param: GameState):
@@ -115,19 +117,20 @@ class ConnectionEstablished(State):
     @overrides
     def next(self, param):
         if not connected(self.client, self.server):
-            return TryReconnection(self.client, self.server, self.communication_data)
+            return TryReconnection(self.client, self.server, self.communication_data, self.logger)
         return self
 
 
 class TryReconnection(State):
-    def __init__(self, client: Client, server: Server, communication_data: CommunicationData):
+    def __init__(self, client: Client, server: Server, communication_data: CommunicationData, logger: Logger):
         self.client = client
         self.server = server
         self.communication_data = communication_data
+        self.logger = logger
 
     @overrides
     def start(self, param):
-        print('Trying to reconnect to other player...')
+        self.logger.log('Trying to reconnect to other player...')
 
     # reconnection is done automatically in the client thread
 
