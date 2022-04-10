@@ -2,6 +2,7 @@ import math
 from typing import Union
 
 from rlbot.utils.structures import game_data_struct
+import rlbot.utils.game_state_util as game_state_utils
 
 
 class Vector3:
@@ -107,3 +108,6 @@ class Vector3:
         """Returns the angle to the ideal vector. Angle will be between 0 and pi."""
         cos_ang = self.dot(ideal) / (self.length() * ideal.length())
         return math.acos(cos_ang)
+
+    def to_game_state_vector3(self):
+        return game_state_utils.Vector3(self.x, self.y, self.z)
