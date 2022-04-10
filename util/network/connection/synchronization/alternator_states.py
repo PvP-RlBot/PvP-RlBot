@@ -1,5 +1,7 @@
 import time
 
+from overrides import overrides
+
 from util.io.game_state import GameState
 from util.network.client import Client
 from util.network.connection.communication_data import CommunicationData
@@ -30,9 +32,11 @@ class SendSyncData(State):
         self.client = client
         self.communication_data = communication_data
 
+    @overrides
     def exec(self, param: GameState):
         self.client.send_data(GameState.toJSON(param))
 
+    @overrides
     def next(self, param):
         return ReceiveSyncData(self.client, self.communication_data)
 
@@ -43,14 +47,14 @@ class ReceiveSyncData(State):
         self.client = client
         self.communication_data = communication_data
 
-    def exec(self, param: GameState):
-        # handled in the server thread
-        pass
-
+    @overrides
     def stop(self, param: GameState):
         param.update_with_sync_data(self.communication_data.received_sync_data)
         self.communication_data.received_sync_data = None
 
+    # reception handled in the server thread
+
+    @overrides
     def next(self, param):
         if is_data_received(self.communication_data):
             return SendSyncData(self.client, self.communication_data)

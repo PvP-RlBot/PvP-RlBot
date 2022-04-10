@@ -9,6 +9,8 @@ from util.io.dynamic_data.car import CarData
 
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 
+from util.math.vector.vector3 import Vector3
+
 
 class GameState:
     def __init__(self, packet: GameTickPacket, index: int):
@@ -30,7 +32,7 @@ class GameState:
         return human_car_list
 
     def update_with_sync_data(self, received_sync_data):
-        pass
+        self.ball.velocity = (received_sync_data.ball.velocity + Vector3(5, 0, 0))
 
     def toFrameworkGameState(self):
         ball_state = framework_utils.BallState(

@@ -1,30 +1,31 @@
-from abc import ABC, abstractmethod
+from typing import TypeVar, Generic
 
-from util.coding_rules.override import Override
-from util.io.game_state import GameState
+from overrides import overrides
+
+T = TypeVar('T')
 
 
-class State(ABC):
-    def start(self, param):
+class State(Generic[T]):
+    def start(self, param: T):
         pass
 
-    def stop(self, param):
+    def stop(self, param: T):
         pass
 
-    def exec(self, param):
+    def exec(self, param: T):
         pass
 
-    def next(self, param):
+    def next(self, param: T):
         return self
 
 
-class StateMachine(State):
+class StateMachine(State[T]):
     def __init__(self, init_state):
         self.state = None
         self.nextState = init_state
 
-    @Override(State)
-    def exec(self, param: GameState):
+    @overrides
+    def exec(self, param: T):
         if self.nextState is not self.state:
             self.nextState.start(param)
         self.state = self.nextState

@@ -10,3 +10,4 @@ pip
 # jsonpickle~=2.1.0
 # socketio~=0.2.1
 # eventlet~=0.33.0
+# overrides~=6.1.0
