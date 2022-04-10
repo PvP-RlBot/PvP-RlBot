@@ -3,6 +3,7 @@ import time
 from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 
+from util.logging.logging import ConsoleLogger
 from util.network.connection.connection_handler import GameSynchronizer
 from util.io.bot_output import BotOutput
 from util.io.game_state import GameState
@@ -12,7 +13,7 @@ class Bot(BaseAgent):
     def __init__(self, name, team, index):
         super().__init__(name, team, index)
         self.index = index
-        self.game_synchronizer = GameSynchronizer()
+        self.game_synchronizer = GameSynchronizer(ConsoleLogger())
 
     def initialize_agent(self):
         pass

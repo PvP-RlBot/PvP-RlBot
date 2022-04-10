@@ -9,13 +9,13 @@ class Client:
         self.sio = socketio.Client()
 
     def start(self, url='http://localhost:5000'):
-        self.sio.connect(url)
+        try:
+            self.sio.connect(url)
+        except ConnectionError:
+            pass
 
     def stop(self):
-        try:
-            self.sio.disconnect()
-        except Exception:
-            pass
+        self.sio.disconnect()
 
     def send_data(self, str_data):
         self.sio.emit('*', data=str_data)

@@ -7,8 +7,8 @@ from util.io.game_state import GameState
 from util.logging.logging import Logger, ConsoleLogger
 from util.network.client import Client
 from util.network.connection.connection_gui import ConnectionGUI
-from util.network.connection.synchronization.alternator import AlternatingCommunicationStrategy
-from util.network.connection.synchronization.alternator_states import CommunicationData
+from util.network.connection.synchronization.communication_strategy import AlternatingCommunicationStrategy
+from util.network.connection.synchronization.alternating_strategy_states import CommunicationData
 from util.network.connection.communication_data import CommunicationDataBuilder
 from util.network.server import Server
 from util.state_machine.state_machine import State
@@ -19,21 +19,23 @@ def connected(client: Client, server: Server):
 
 
 class TryConnectingWithConfigFile(State):
-    def __init__(self):
+    def __init__(self, logger: Logger):
         file = open("src/network_connection.cfg", "r")
         self.communication_data_from_cfg = CommunicationData.validateCommunicationData(jsonpickle.decode(file.read()))
         file.close()
+        self.logger = logger
 
     @overrides
     def next(self, param):
         if CommunicationData.is_config_file_invalid(self.communication_data_from_cfg):
-            return AskNetworkInfoGUI()
-        return ConnectToOtherPlayer(self.communication_data_from_cfg)
+            return AskNetworkInfoGUI(self.logger)
+        return ConnectToOtherPlayer(self.communication_data_from_cfg, self.logger)
 
 
 class AskNetworkInfoGUI(State):
-    def __init__(self):
+    def __init__(self, logger: Logger):
         self.connection_gui = ConnectionGUI()
+        self.logger = logger
 
     @overrides
     def exec(self, param):
@@ -54,7 +56,7 @@ class AskNetworkInfoGUI(State):
             file = open("src/network_connection.cfg", "w")
             file.write(jsonpickle.encode(communication_data, indent=4))
             file.close()
-            return ConnectToOtherPlayer(communication_data)
+            return ConnectToOtherPlayer(communication_data, self.logger)
         return self
 
 
@@ -63,12 +65,13 @@ def cannotConnectToOtherPlayer(thread1: Thread, thread2: Thread):
 
 
 class ConnectToOtherPlayer(State):
-    def __init__(self, communication_data: CommunicationData):
+    def __init__(self, communication_data: CommunicationData, logger: Logger):
         self.client = Client()
         self.server = Server()
         self.communication_data = communication_data
         self.client_connection_thread = None
         self.server_connection_thread = None
+        self.logger = logger
 
     @overrides
     def start(self, param):
@@ -87,7 +90,7 @@ class ConnectToOtherPlayer(State):
         if cannotConnectToOtherPlayer(self.server_connection_thread, self.client_connection_thread):
             self.server.stop()
             self.client.stop()
-            return AskNetworkInfoGUI()
+            return AskNetworkInfoGUI(self.logger)
         return self
 
 
@@ -137,5 +140,5 @@ class TryReconnection(State):
     @overrides
     def next(self, param):
         if connected(self.client, self.server):
-            return ConnectionEstablished(self.client, self.server, self.communication_data)
+            return ConnectionEstablished(self.client, self.server, self.communication_data, self.logger)
         return self

@@ -29,10 +29,7 @@ class Server:
         wsgi.server(self.socket, self.app)
 
     def stop(self):
-        try:
-            self.socket.close()
-        except Exception:
-            pass
+        self.socket.close()
 
     def set_reception_callback(self, callback: Callable[[str], None]):
         @self.sio.on('*')

@@ -4,7 +4,7 @@ from overrides import overrides
 
 from util.io.game_state import GameState
 from util.network.client import Client
-from util.network.connection.synchronization.alternator_states import get_starting_state, CommunicationData
+from util.network.connection.synchronization.alternating_strategy_states import get_starting_state, CommunicationData
 from util.network.server import Server
 from util.state_machine.state_machine import StateMachine
 
