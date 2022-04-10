@@ -9,8 +9,6 @@ from util.io.dynamic_data.car import CarData
 
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 
-from util.math.vector.vector3 import Vector3
-
 
 class GameState:
     def __init__(self, packet: GameTickPacket, index: int):
